@@ -45,42 +45,34 @@ My personalized configuration for a high-performance, keyboard-driven workflow o
 
 ## 🚀 Installation
 
-### Automated Setup (Recommended)
-This repo includes a script to automate installing packages (Arch/Yay) and symlinking configs safely.
+### ⚡ One-Liner (Recommended)
+Install everything (Git, Base-devel, Dotfiles, Packages, Drivers, Shell) with a single command:
 
-1. **Clone the repository:**
-   ```bash
-   git clone git@github.com:MythEclipse/hyprland-config.git ~/.dotfiles
-   cd ~/.dotfiles
-   ```
+```bash
+bash <(curl -s https://raw.githubusercontent.com/MythEclipse/hyprland-config/main/setup.sh)
+```
 
-2. **Run the installer:**
-   ```bash
-   chmod +x install.sh
-   ./install.sh
-   ```
-   *The script will automatically backup your existing configs to `~/.config/backup_<date>` before linking.*
+This script will:
+1. Install `git` and `base-devel` (Arch/Pacman).
+2. Clone this repo to `~/.dotfiles` (or `~/.config`).
+3. Detect your GPU (NVIDIA/AMD/Intel) and install correct drivers.
+4. Install all packages (Hyprland, Waybar, etc.) using `yay`.
+5. Setup Zsh, Oh-My-Zsh, and Themes.
+6. Configure SDDM (Login Screen) if requested.
 
 ### Manual Installation
-If you prefer to copy files manually:
+If you prefer to do it manually:
 
 1. **Clone:**
    ```bash
    git clone git@github.com:MythEclipse/hyprland-config.git ~/.config/hypr-backup
    ```
 
-2. **Copy Configs:**
+2. **Run Installer:**
    ```bash
-   # Backup your existing configs first!
-   cp -r ~/.config/hypr-backup/hypr ~/.config/
-   cp -r ~/.config/hypr-backup/waybar ~/.config/
-   # ... repeat for other folders
-   ```
-
-3. **Install Dependencies:**
-   Install the packages listed in `pkglist.txt`:
-   ```bash
-   yay -S --needed - < pkglist.txt
+   cd ~/.config/hypr-backup
+   chmod +x install.sh
+   ./install.sh
    ```
 
 ## ⌨️ Keybindings (Highlights)
