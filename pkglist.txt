@@ -1,0 +1,35 @@
+# Core Components
+hyprland
+waybar
+dunst
+wofi
+wlogout
+xdg-desktop-portal-hyprland
+
+# Terminal & Shell
+kitty
+starship
+zsh
+fastfetch
+micro
+btop
+
+# File Management & GUI Tools
+thunar
+nwg-look
+nwg-displays
+pavucontrol
+polkit-kde-agent
+qt5ct
+qt6ct
+
+# Media
+mpv
+grim
+slurp
+wl-clipboard
+
+# Fonts (Standard for these configs)
+ttf-font-awesome
+ttf-jetbrains-mono-nerd
+noto-fonts-emoji

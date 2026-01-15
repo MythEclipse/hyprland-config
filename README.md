@@ -45,22 +45,43 @@ My personalized configuration for a high-performance, keyboard-driven workflow o
 
 ## 🚀 Installation
 
-### 1. Clone the repository
-```bash
-# Clone into your .config directory
-git clone git@github.com:MythEclipse/hyprland-config.git ~/.config/hypr-backup
+### Automated Setup (Recommended)
+This repo includes a script to automate installing packages (Arch/Yay) and symlinking configs safely.
 
-# Copy specific configs (Backup your existing ones first!)
-cp -r ~/.config/hypr-backup/hypr ~/.config/
-cp -r ~/.config/hypr-backup/waybar ~/.config/
-# ... and so on
-```
+1. **Clone the repository:**
+   ```bash
+   git clone git@github.com:MythEclipse/hyprland-config.git ~/.dotfiles
+   cd ~/.dotfiles
+   ```
 
-### 2. Dependencies
-Ensure you have the required packages installed (Arch Linux example):
-```bash
-yay -S hyprland waybar kitty wofi dunst starship btop wlogout fastfetch ttf-font-awesome
-```
+2. **Run the installer:**
+   ```bash
+   chmod +x install.sh
+   ./install.sh
+   ```
+   *The script will automatically backup your existing configs to `~/.config/backup_<date>` before linking.*
+
+### Manual Installation
+If you prefer to copy files manually:
+
+1. **Clone:**
+   ```bash
+   git clone git@github.com:MythEclipse/hyprland-config.git ~/.config/hypr-backup
+   ```
+
+2. **Copy Configs:**
+   ```bash
+   # Backup your existing configs first!
+   cp -r ~/.config/hypr-backup/hypr ~/.config/
+   cp -r ~/.config/hypr-backup/waybar ~/.config/
+   # ... repeat for other folders
+   ```
+
+3. **Install Dependencies:**
+   Install the packages listed in `pkglist.txt`:
+   ```bash
+   yay -S --needed - < pkglist.txt
+   ```
 
 ## ⌨️ Keybindings (Highlights)
 | Key | Action |
