@@ -32,15 +32,85 @@ else
     fi
 fi
 
-# --- 2. Install Packages ---
-echo -e "\n${YELLOW}📦 Installing packages...${NC}"
+# --- 2. Hardware Detection & Driver Install ---
+echo -e "\n${YELLOW}🔍 Detecting Hardware...${NC}"
+
+# Detect GPU
+GPU_VENDOR=""
+if lspci -k | grep -A 2 -E "(VGA|3D)" | grep -iq "nvidia"; then
+    GPU_VENDOR="nvidia"
+    echo -e "Detected GPU: ${GREEN}NVIDIA${NC}"
+elif lspci -k | grep -A 2 -E "(VGA|3D)" | grep -iq "amd"; then
+    GPU_VENDOR="amd"
+    echo -e "Detected GPU: ${GREEN}AMD${NC}"
+elif lspci -k | grep -A 2 -E "(VGA|3D)" | grep -iq "intel"; then
+    GPU_VENDOR="intel"
+    echo -e "Detected GPU: ${GREEN}INTEL${NC}"
+else
+    GPU_VENDOR="unknown"
+    echo -e "Detected GPU: ${RED}Unknown${NC} (Defaulting to generic)"
+fi
+
+# Detect Virtual Machine
+IS_VM=false
+if hostnamectl status | grep -qi "virtualization"; then
+    echo -e "System Type: ${YELLOW}Virtual Machine${NC}"
+    IS_VM=true
+else
+    echo -e "System Type: ${GREEN}Physical Machine${NC}"
+fi
+
+# Detect Laptop (Battery check)
+IS_LAPTOP=false
+if [ -d "/sys/class/power_supply" ] && ls /sys/class/power_supply/BAT* 1> /dev/null 2>&1; then
+    echo -e "Form Factor: ${YELLOW}Laptop${NC}"
+    IS_LAPTOP=true
+else
+    echo -e "Form Factor: ${GREEN}Desktop${NC}"
+fi
+
+# --- 3. Install Core Packages ---
+echo -e "\n${YELLOW}📦 Installing Core Packages...${NC}"
 if [ -f "pkglist.txt" ]; then
     $AUR_HELPER -S --needed --noconfirm - < pkglist.txt
 else
-    echo -e "${RED}pkglist.txt not found! Skipping package installation.${NC}"
+    echo -e "${RED}pkglist.txt not found! Skipping core packages.${NC}"
 fi
 
-# --- 3. Shell Setup (Zsh + Oh My Zsh) ---
+# --- 4. Install Specific Drivers ---
+echo -e "\n${YELLOW}🔧 Installing Drivers & Tools...${NC}"
+
+# GPU Drivers
+case $GPU_VENDOR in
+    "nvidia")
+        echo "Installing NVIDIA Drivers..."
+        $AUR_HELPER -S --needed --noconfirm nvidia-dkms nvidia-utils lib32-nvidia-utils nvidia-settings
+        ;;
+    "amd")
+        echo "Installing AMD Drivers..."
+        $AUR_HELPER -S --needed --noconfirm mesa lib32-mesa xf86-video-amdgpu vulkan-radeon lib32-vulkan-radeon
+        ;;
+    "intel")
+        echo "Installing Intel Drivers..."
+        $AUR_HELPER -S --needed --noconfirm mesa lib32-mesa vulkan-intel lib32-vulkan-intel intel-media-driver
+        ;;
+esac
+
+# Laptop Tools
+if [ "$IS_LAPTOP" = true ]; then
+    echo "Installing Laptop Tools (Brightness, Power)..."
+    $AUR_HELPER -S --needed --noconfirm brightnessctl tlp
+    sudo systemctl enable --now tlp.service
+fi
+
+# VM Tools
+if [ "$IS_VM" = true ]; then
+    echo "Installing VM Tools (Spice, Clipboard)..."
+    $AUR_HELPER -S --needed --noconfirm spice-vdagent
+fi
+
+
+# --- 5. Shell Setup (Zsh + Oh My Zsh) ---
 echo -e "\n${YELLOW}🐚 Setting up Zsh...${NC}"
 if [ "$SHELL" != "/bin/zsh" ] && [ "$SHELL" != "/usr/bin/zsh" ]; then
     echo "Changing default shell to zsh..."
@@ -52,14 +122,14 @@ if [ ! -d "$HOME/.oh-my-zsh" ]; then
     echo "Installing Oh My Zsh..."
     sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
     
-    # Install Plugins (Autosuggestions & Syntax Highlighting)
+    # Install Plugins
     git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
     git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
 else
     echo "Oh My Zsh is already installed."
 fi
 
-# --- 4. Backup & Link Configs ---
+# --- 6. Backup & Link Configs ---
 BACKUP_DIR="$HOME/.config/backup_$(date +%Y%m%d_%H%M%S)"
 echo -e "\n${YELLOW}hk️ Backing up existing configs to $BACKUP_DIR...${NC}"
 mkdir -p "$BACKUP_DIR"
@@ -113,29 +183,55 @@ for FILE in "${FILES[@]}"; do
     fi
 done
 
-# --- 5. System Services & Settings ---
+# --- 7. Configure GPU Config Symlink ---
+echo -e "\n${YELLOW}🔗 Linking GPU Configuration...${NC}"
+CONF_DIR="$HOME/.config/hypr/conf"
+GPU_CONF="$CONF_DIR/gpu.conf"
+
+# Remove existing symlink if it exists
+[ -L "$GPU_CONF" ] && rm "$GPU_CONF"
+
+case $GPU_VENDOR in
+    "nvidia")
+        ln -s "$CONF_DIR/nvidia.conf" "$GPU_CONF"
+        echo -e "Linked ${GREEN}nvidia.conf${NC}"
+        ;;
+    "amd")
+        ln -s "$CONF_DIR/amd.conf" "$GPU_CONF"
+        echo -e "Linked ${GREEN}amd.conf${NC}"
+        ;;
+    "intel")
+        ln -s "$CONF_DIR/intel.conf" "$GPU_CONF"
+        echo -e "Linked ${GREEN}intel.conf${NC}"
+        ;;
+    *)
+        echo -e "${RED}No specific GPU config found for '$GPU_VENDOR'. Creating empty default.${NC}"
+        touch "$GPU_CONF"
+        ;;
+esac
+
+
+# --- 8. System Services & Settings ---
 echo -e "\n${YELLOW}⚙️  Configuring system settings...${NC}"
 
 # Enable Services
 sudo systemctl enable --now bluetooth.service
-# NetworkManager is usually critical, careful not to restart if remote
 sudo systemctl enable NetworkManager.service 
 
 # Font Cache
 echo "Refreshing font cache..."
 fc-cache -f
 
-# Apply GTK Theme (Tokyonight)
+# Apply GTK Theme
 echo "Applying GTK Theme..."
 gsettings set org.gnome.desktop.interface gtk-theme 'Tokyonight-Dark'
 gsettings set org.gnome.desktop.interface icon-theme 'Papirus-Dark'
 gsettings set org.gnome.desktop.interface cursor-theme 'Bibata-Modern-Ice'
 gsettings set org.gnome.desktop.interface font-name 'JetBrains Mono Nerd Font 10'
 
-# --- 6. Wallpaper Fix ---
+# --- 9. Wallpaper ---
 echo -e "\n${YELLOW}🖼️  Setting up Wallpaper...${NC}"
 mkdir -p ~/Pictures/Wallpapers
-# Note: You might want to copy a default wallpaper here if you had one in the repo
 echo "Note: Please check ~/.config/hypr/hyprpaper.conf to ensure the wallpaper path is correct."
 
 echo -e "\n${GREEN}✅ Installation Complete!${NC}"
