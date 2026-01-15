@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+<action>
+        <icon>utilities-terminal</icon>
+        <name>Open Terminal Here</name>
+        <submenu></submenu>
+        <unique-id>1765864750725144-1</unique-id>
+        <command>kitty %f</command>
+        <description>Open terminal in current folder</description>
+        <range></range>
+        <patterns>*</patterns>
+        <startup-notify/>
+        <directories/>
+</action>
+<action>
+        <icon>com.visualstudio.code</icon>
+        <name>Open in VSCode</name>
+        <submenu></submenu>
+        <unique-id>1765864750725144-2</unique-id>
+        <command>code %f</command>
+        <description>Open folder/file in VSCode</description>
+        <range></range>
+        <patterns>*</patterns>
+        <startup-notify/>
+        <directories/>
+        <text-files/>
+</action>
+</actions>

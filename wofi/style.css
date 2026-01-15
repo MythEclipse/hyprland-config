@@ -1,0 +1,58 @@
+/* Modern Island Wofi Theme */
+
+window {
+    margin: 0px;
+    border: 2px solid #cba6f7; /* Mauve Border */
+    background-color: rgba(30, 30, 46, 0.95); /* Catppuccin Base */
+    border-radius: 16px;
+    font-family: "JetBrainsMono Nerd Font", monospace;
+}
+
+#input {
+    margin: 5px;
+    border: 2px solid #89b4fa; /* Blue */
+    border-radius: 12px;
+    background-color: #11111b; /* Crust */
+    color: #cdd6f4;
+    padding: 10px;
+}
+
+#inner-box {
+    margin: 5px;
+    border: none;
+    background-color: transparent;
+}
+
+#outer-box {
+    margin: 5px;
+    border: none;
+    background-color: transparent;
+}
+
+#scroll {
+    margin: 0px;
+    border: none;
+}
+
+#text {
+    margin: 5px;
+    border: none;
+    color: #cdd6f4;
+}
+
+#entry {
+    margin: 5px;
+    border: none;
+    border-radius: 12px;
+    background-color: transparent;
+}
+
+#entry:selected {
+    background-color: #cba6f7;
+    background: linear-gradient(90deg, #cba6f7, #89b4fa); /* Mauve to Blue */
+}
+
+#entry:selected #text {
+    color: #1e1e2e;
+    font-weight: bold;
+}
