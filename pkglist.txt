@@ -5,6 +5,9 @@ dunst
 wofi
 wlogout
 xdg-desktop-portal-hyprland
+hyprpaper
+hypridle
+hyprlock
 
 # Terminal & Shell
 kitty
@@ -13,23 +16,50 @@ zsh
 fastfetch
 micro
 btop
+zsh-completions
+zsh-autosuggestions
+zsh-syntax-highlighting
 
 # File Management & GUI Tools
 thunar
+thunar-archive-plugin
+file-roller
 nwg-look
 nwg-displays
 pavucontrol
 polkit-kde-agent
 qt5ct
 qt6ct
+gnome-keyring
 
-# Media
+# Network & Bluetooth
+network-manager-applet
+blueman
+bluez
+bluez-utils
+
+# Clipboard Manager
+wl-clipboard
+cliphist
+
+# Media & Audio
 mpv
 grim
 slurp
-wl-clipboard
+pamixer
+playerctl
+brightnessctl
 
-# Fonts (Standard for these configs)
+# Fonts
 ttf-font-awesome
 ttf-jetbrains-mono-nerd
 noto-fonts-emoji
+ttf-nerd-fonts-symbols
+
+# Themes & Icons
+tokyonight-gtk-theme-git
+papirus-icon-theme
+bibata-cursor-theme
+
+# Browsers (Optional but recommended)
+brave-bin
