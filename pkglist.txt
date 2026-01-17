@@ -27,7 +27,7 @@ file-roller
 nwg-look
 nwg-displays
 pavucontrol
-polkit-kde-agent
+polkit-gnome
 qt5ct
 qt6ct
 gnome-keyring
